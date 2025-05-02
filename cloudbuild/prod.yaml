@@ -1,0 +1,47 @@
+steps:
+  # Decrypt the secret
+  - name: gcr.io/cloud-builders/gcloud
+    entrypoint: "bash"
+    args:
+      [
+        "-c",
+        "gcloud secrets versions access latest --secret=${_SECRET_NAME} --format='get(payload.data)' | tr '_-' '/+' | base64 -d > .env",
+      ]
+  # Build container image
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      [
+        "build",
+        "-t",
+        "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_APP_NAME}-repo/${_APP_NAME}:latest",
+        ".",
+      ]
+  # Push the container image to Artifact Registry
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      [
+        "push",
+        "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_APP_NAME}-repo/${_APP_NAME}:latest",
+      ]
+  # Deploy container image to Cloud Run
+  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    entrypoint: gcloud
+    args:
+      [
+        "run",
+        "deploy",
+        "${_APP_NAME}",
+        "--image",
+        "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_APP_NAME}-repo/${_APP_NAME}:latest",
+        "--region",
+        "${_REGION}",
+        "--allow-unauthenticated",
+      ]
+
+images:
+  - "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_APP_NAME}-repo/${_APP_NAME}:latest"
+
+substitutions:
+  _REGION: asia-northeast1
+  _APP_NAME: coordinator
+  _SECRET_NAME: www-asfeel
