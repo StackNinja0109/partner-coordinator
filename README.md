@@ -21,7 +21,7 @@ A modern web application built with Next.js 13, featuring authentication, API in
 
 ```
 coordinator/
-├── app/                    # Next.js 13 app directory
+├── app/                   # Next.js 13 app directory
 │   ├── (auth)/            # Authentication routes
 │   ├── (main)/            # Main application routes
 │   ├── api/               # API routes
