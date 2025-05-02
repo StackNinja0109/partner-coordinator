@@ -1,0 +1,23 @@
+.checkbox {
+  background-color: #F5F6F8;
+}
+
+.checkbox:has(input:checked) {
+  background-color: #EFEFEF;
+}
+
+.icon_check {
+  display: none;
+}
+
+.icon_nocheck {
+  display: block;
+}
+
+input:checked ~ .icon_check {
+  display: block;
+}
+
+input:checked ~ .icon_nocheck {
+  display: none;
+}

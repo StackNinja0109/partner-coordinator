@@ -1,0 +1,29 @@
+:global(.ant-dropdown) .dropdown_note {
+  padding: 20px 8px 64px 36px;
+  @apply bg-light-yellow_light;
+}
+:global(.ant-dropdown) .dropdown_note .dropdown_note_content {
+  padding-right: 12px;
+  width: 100%;
+  display: inline-block;
+}
+:global(.ant-dropdown) .dropdown_note .dropdown_note_content > textarea {
+  padding-right: 8px;
+  overflow-y: scroll;
+}
+:global(.ant-dropdown) .dropdown_note .dropdown_note_content > textarea::-webkit-scrollbar {
+  width: 5px;
+}
+:global(.ant-dropdown) .dropdown_note .dropdown_note_content > textarea::-webkit-scrollbar-thumb {
+  background-color: #d9d9d9;
+  border-radius: 9999px;
+}
+:global(.ant-dropdown) .dropdown_note .dropdown_note_content > textarea::-webkit-scrollbar-track {
+  background-color: #fdf8e9;
+}
+:global(.ant-dropdown) .dropdown_note :global .ant-dropdown-menu-item:hover {
+  background-color: transparent;
+}
+:global(.ant-dropdown) .dropdown_note :global .ant-dropdown-menu-item-active {
+  background-color: transparent !important;
+}/*# sourceMappingURL=index.module.css.map */

@@ -1,0 +1,29 @@
+.textareaScrollbarWidth::-webkit-scrollbar {
+  width: 4px;
+}
+
+.textareaScrollbarWidthSP::-webkit-scrollbar {
+  width: 3px;
+}
+
+.textareaScrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.textareaScrollbar::-webkit-scrollbar-thumb {
+  background: #C1C1C1;
+  border-radius: 3px;
+}
+
+.textareaScrollbar::-webkit-scrollbar-thumb:hover {
+  background: #888;
+}
+.textareaScrollbar::-webkit-scrollbar-track-piece:end {
+  background: transparent;
+  margin-bottom: 8px; 
+}
+
+.textareaScrollbar::-webkit-scrollbar-track-piece:start {
+  background: transparent;
+  margin-top: 8px;
+}
