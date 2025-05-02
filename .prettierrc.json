@@ -1,0 +1,14 @@
+{
+  "semi": false,
+  "singleQuote": true,
+  "printWidth": 80,
+
+  "overrides": [
+    {
+      "files": "libs/firebase/firestore.ts",
+      "options": {
+        "printWidth": 200
+      }
+    }
+  ]
+}
