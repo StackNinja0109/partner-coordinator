@@ -1,0 +1,210 @@
+/**
+ * Import function triggers from their respective submodules:
+ *
+ * const {onCall} = require("firebase-functions/v2/https");
+ * const {onDocumentWritten} = require("firebase-functions/v2/firestore");
+ *
+ * See a full list of supported triggers at https://firebase.google.com/docs/functions
+ */
+// const { onRequest } = require("firebase-functions/v2/https");
+
+// const logger = require("firebase-functions/logger");
+
+const _ = require('lodash');
+const { IncomingWebhook } = require('@slack/webhook');
+
+require('dotenv').config()
+
+const { onDocumentWritten } = require("firebase-functions/v2/firestore");
+const { setGlobalOptions } = require('firebase-functions/v2');
+
+const { Client } = require('@elastic/elasticsearch')
+
+setGlobalOptions({ region: 'asia-northeast1' })
+
+
+const eCloudId = process.env.ELASTIC_CLOUDID
+const eCloudPass = process.env.ELASTIC_PASS
+const projectId = process.env.GCLOUD_PROJECT
+
+const elasticSearchClient = new Client({
+    cloud: {
+        id: eCloudId
+    },
+    auth: {
+        username: 'elastic',
+        password: eCloudPass
+    }
+})
+
+const slackNotification = (message) => {
+    const url = process.env.SLACK_WEBHOOK_URL;
+    const webhook = new IncomingWebhook(url);
+    webhook.send({
+        text: `Cloud Function Notification: ${message}`,
+      });
+}
+
+const filterWithKeys = (excludeKeys, object) => {
+    return Object.keys(object)
+        .filter(key => !keys.includes(key))
+        .reduce((obj, key) => {
+            obj[key] = object[key];
+            return obj;
+        }, {});
+}
+//
+// const isIndexKeysChanged = (indexKeys, beforeData, afterData) => {
+//     indexedBeforeData = filterWithKeys(indexKeys, beforeData)
+//     indexedAfterData = filterWithKeys(indexKeys, afterData)
+//     return !_.isEqual(indexedBeforeData, indexedAfterData);
+//
+// }
+
+exports.customerElasticIndexor = onDocumentWritten("cust/{custId}", (event) => {
+    const elasticIndex = `${projectId}-customer`
+    const newValue = event.data.after.data();
+    const beforeValue = event.data.before.data()
+    const documentId = event.params.custId;
+
+    if (newValue === undefined) {
+        // removed document
+        console.log(`${elasticIndex}: document deleted ${documentId}`)
+        elasticSearchClient.delete({ index: elasticIndex, id: documentId })
+    } else if (beforeValue === undefined) {
+        // document created newly
+        console.log(`${elasticIndex}: document created ${documentId}`)
+        if (Object.keys(newValue).length !== 0) {
+            const res = elasticSearchClient.index({ index: elasticIndex, id: documentId, body: newValue })
+            res.catch((err) => {
+                slackNotification(`${elasticIndex}:${documentId}: ${err}`)
+            })
+        }
+    } else {
+        //  document updated
+        if (!_.isEqual(beforeValue, newValue)) {
+            if (Object.keys(newValue).length !== 0) {
+                console.log(`${elasticIndex}: document updated ${documentId}`)
+                const res = elasticSearchClient.index({ index: elasticIndex, id: documentId, body: newValue })
+                res.catch((err) => {
+                    slackNotification(`${elasticIndex}:${documentId}: ${err}`)
+                })
+            }
+        }
+    }
+});
+
+
+exports.artistElasticIndexor = onDocumentWritten("artist/{artistId}", (event) => {
+
+    const elasticIndex = `${projectId}-artist`
+
+    const newValue = event.data.after.data();
+    const beforeValue = event.data.before.data()
+    const documentId = event.params.artistId;
+
+    if (newValue === undefined) {
+        // removed document
+        console.log(`${elasticIndex}: document deleted ${documentId}`)
+        elasticSearchClient.delete({ index: elasticIndex, id: documentId })
+    } else if (beforeValue === undefined) {
+        // document created newly
+        console.log(`${elasticIndex}: document created ${documentId}`)
+        if (Object.keys(newValue).length !== 0) {
+            const res = elasticSearchClient.index({ index: elasticIndex, id: documentId, body: newValue })
+            res.catch((err) => {
+                slackNotification(`${elasticIndex}:${documentId}: ${err}`)
+            })
+        }
+    } else {
+        //  document updated
+        if (!_.isEqual(beforeValue, newValue)) {
+            if (Object.keys(newValue).length !== 0) {
+                console.log(`${elasticIndex}: document updated ${documentId}`)
+                const res = elasticSearchClient.index({ index: elasticIndex, id: documentId, body: newValue })
+                res.catch((err) => {
+                    slackNotification(`${elasticIndex}:${documentId}: ${err}`)
+                })
+            }
+        }
+    }
+});
+
+
+
+exports.scheduleElasticIndexor = onDocumentWritten("schedule/{scheduleId}", (event) => {
+    const elasticIndex = `${projectId}-schedule`
+
+    const newValue = event.data.after.data();
+    const beforeValue = event.data.before.data()
+    const documentId = event.params.scheduleId;
+
+    if (newValue === undefined) {
+        // removed document
+        console.log(`${elasticIndex}: document deleted ${documentId}`)
+        elasticSearchClient.delete({ index: elasticIndex, id: documentId })
+    } else if (beforeValue === undefined) {
+        // document created newly
+        console.log(`${elasticIndex}: document created ${documentId}`)
+        if (Object.keys(newValue).length !== 0) {
+            const res = elasticSearchClient.index({ index: elasticIndex, id: documentId, body: newValue })
+            res.catch((err) => {
+                slackNotification(`${elasticIndex}:${documentId}: ${err}`)
+            })
+        }
+    } else {
+        //  document updated
+        if (!_.isEqual(beforeValue, newValue)) {
+            if (Object.keys(newValue).length !== 0) {
+                console.log(`${elasticIndex}: document updated ${documentId}`)
+                const res = elasticSearchClient.index({ index: elasticIndex, id: documentId, body: newValue })
+                res.catch((err) => {
+                    slackNotification(`${elasticIndex}:${documentId}: ${err}`)
+                })
+            }
+        }
+    }
+
+});
+
+
+exports.reserveElasticIndexor = onDocumentWritten("reserve/{reserveId}", (event) => {
+    const elasticIndex = `${projectId}-reserve`
+
+    const newValue = event.data.after.data();
+    const beforeValue = event.data.before.data()
+    const documentId = event.params.reserveId;
+
+    if (newValue === undefined) {
+        // removed document
+        console.log(`${elasticIndex}: document deleted ${documentId}`)
+        elasticSearchClient.delete({ index: elasticIndex, id: documentId })
+    } else if (beforeValue === undefined) {
+        // document created newly
+        console.log(`${elasticIndex}: document created ${documentId}`)
+        if (Object.keys(newValue).length !== 0) {
+            const res = elasticSearchClient.index({ index: elasticIndex, id: documentId, body: newValue })
+            res.catch((err) => {
+                slackNotification(`${elasticIndex}:${documentId}: ${err}`)
+            })
+        }
+    } else {
+        //  document updated
+        if (!_.isEqual(beforeValue, newValue)) {
+            if (Object.keys(newValue).length !== 0) {
+                console.log(`${elasticIndex}: document updated ${documentId}`)
+                const res = elasticSearchClient.index({ index: elasticIndex, id: documentId, body: newValue })
+                res.catch((err) => {
+                    slackNotification(`${elasticIndex}:${documentId}: ${err}`)
+                })
+            }
+        }
+    }
+
+});
+
+
+// exports.helloWorld = onRequest(async (request, response) => {
+//     logger.info("Hello logs!", { structuredData: true });
+//     response.send("Hello from Firebase!");
+// });
